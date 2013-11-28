@@ -14,3 +14,4 @@ TODO:
  * Make helo/rhdnsbl checking more configurable (i.e. more flexible than just using $dnsbl_checks_only)
  * Allow logging to a file and not via syslog (perhaps)
  * Add some basic tests to ensure I don't break anything.
+ * Try and discover the geoip patch and add it in, or recreate?
