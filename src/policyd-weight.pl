@@ -594,7 +594,7 @@ if(!($conf))
 my $conf_err;
 my $conf_str;
 our $old_mtime;
-if($conf ne "")
+if("$conf" ne "")
 {
     if(sprintf("%04o",(stat($conf))[2]) !~ /(7|6|3|2)$/)
     {
@@ -662,7 +662,7 @@ if($CMD_DEBUG == 1)
     print "debug: USER:  $USER\n";
     print "debug: GROUP: $GROUP\n";
     print "debug: issuing user:  ".getpwuid($<)."\n";
-    print "debug: issuing group: ".getpwuid($()."\n";
+    print "debug: issuing group: ".getgid()."\n";
 }
 
 $conf_str = "";
