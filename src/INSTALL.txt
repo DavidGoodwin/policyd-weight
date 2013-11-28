@@ -1,0 +1,29 @@
+Basic INSTALL.txt file :
+
+Weighted Postfix SMTPD policy server.
+
+1. Read : http://www.postfix.org/SMTPD_POLICY_README.html
+
+2. Logging is sent to syslogd.
+
+3. Edit/create a /etc/policyd-weight.conf file (try: perl policyd-weight.pl defaults > policyd-weight.conf) 
+
+4. Edit /etc/postfix/main.cf 
+
+/etc/postfix/main.cf:
+
+smtpd_recipient_restrictions =
+...
+reject_unauth_destination
+...
+check_policy_service inet:127.0.0.1:12525
+
+NOTE: specify check_policy_service AFTER reject_unauth_destination
+or else your system can become an open relay.
+
+
+5. /path/to/policyd-weight start
+
+6. Monitor /var/log/mail.log 
+
+
