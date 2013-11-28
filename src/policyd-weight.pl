@@ -28,39 +28,10 @@
 # VERSION: 0.1.15 beta-2
 # URL:     http://www.policyd-weight.org/
 
+# URL: https://github.com/palepurple/policyd-weight 
 
-# ----------------------------------------------------------
-#           minimal documentation
-# ----------------------------------------------------------
+# minimal documentation: see INSTALL.txt
 
-#
-# Weighted Postfix SMTPD policy server.
-# 
-# This program assumes you have read Postfix' 
-# README_FILES/SMTPD_POLICY_README
-# If not, head to:
-# http://www.postfix.org/SMTPD_POLICY_README.html
-#
-#
-#
-# Logging is sent to syslogd.
-#
-# ----------------------------------------------------------------------
-# To run this in init mode:
-#
-#    % /path/to/policyd-weight start
-#
-# /etc/postfix/main.cf:
-#
-#    smtpd_recipient_restrictions =
-#    ...
-#    reject_unauth_destination
-#    ...
-#    check_policy_service inet:127.0.0.1:12525
-#
-# 
-# NOTE: specify check_policy_service AFTER reject_unauth_destination
-# or else your system can become an open relay.
 
 # begin
 use strict;
@@ -77,10 +48,9 @@ use Config;
 use POSIX;
 use Carp qw(cluck longmess);
 
-
 use vars qw($csock $s $tcp_socket $sock $new_sock $old_mtime);
 
-our $VERSION   = "0.1.15 beta-2";
+our $VERSION   = "0.1.15 beta-2-github";
 our $CVERSION  = 5;                 # cache interface version
 our $CMD_DEBUG = 0;                 # -d switch 
 our $KILL;                          # -k switch
@@ -316,7 +286,6 @@ $SIG{__DIE__} = sub {
 # NOTE: use perl syntax inclusive `;' in configuration files.
 #
 #--BEGIN_CONFDEF
-
 
 my $DEBUG        = 0;               # 1 or 0 - don't comment
 
