@@ -47,6 +47,7 @@ use IO::Select;
 use Config;
 use POSIX;
 use Carp qw(cluck longmess);
+use Geo::IP;
 
 use vars qw($csock $s $tcp_socket $sock $new_sock $old_mtime);
 
@@ -479,6 +480,21 @@ my @bogus_mx_score                   = (2.1,        0    );
 my @random_sender_score              = (0.25,       0    );
 my @rhsbl_penalty_score              = (3.1,        0    );
 my @enforce_dyndns_score             = (3,          0    );
+
+
+
+## GeoIP Settings
+# Add additional country definitions to the below - see
+#  http://www.iso.org/iso/country_codes/iso_3166_code_lists/english_country_names_and_code_elements.htm
+#
+my @geoip_score = (
+    # ISO-3166 COUNTRY CODE, NO MATCH, MATCH, LOG NAME
+    "UK",                       0,      -1,     "UK",
+    "CN",                       0,       2,     "CHINA",
+    "RU",                       0,       2,     "RUSSIA",
+);
+
+my $geoip_scoring_enabled = 0; # 0 = do not perform geoip checks (DEFAULT), 1 = enable
 
 
 my $VERBOSE = 0;
@@ -2452,6 +2468,34 @@ sub weighted_check
         }
     }
 
+## GeoIP check 
+    if($geoip_scoring_enabled == 1) {
+        our $geoip = Geo::IP->new(GEOIP_STANDARD);
+        my $country = $geoip->country_code_by_addr("$ip");
+        if(defined($country)) 
+        {
+            for($i=0; $i<@geoip_score; $i+= 4)
+            {
+                if($country eq $geoip_score[$i]) 
+                {
+                    my $score = $geoip_score[$i+2];
+                    if($score != 0) {
+                        $RET .= " IN_" . $geoip_score[$i+3] . "=" . $score;
+                        $rate += $score;
+                    }
+                }
+                else {
+                    my $score = $geoip_score[$i+1];
+                    if($score != 0) {
+                        $RET .= "NOT_IN_" . $geoip_score[$i+3] . "=" . $score;
+                        $rate += $score;
+                    }
+                }
+            }
+            $RET .= " (GeoIP lookup: $country)";
+        }
+    }
+ 
 ## Reverse IP == HELO check ###################################################
     $found = 0;
     my $rev_processed = 0;
