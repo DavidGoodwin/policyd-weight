@@ -134,9 +134,9 @@ EOF
     {
         my $del;
         open(POLW, "<$0") || die "open: $0: $!\n";
-	    print "# ----------------------------------------------------------------\n";
-	    print "#  policyd-weight configuration (defaults) Version $VERSION \n";
-	    print "# ----------------------------------------------------------------\n";
+        print "# ----------------------------------------------------------------\n";
+        print "#  policyd-weight configuration (defaults) Version $VERSION \n";
+        print "# ----------------------------------------------------------------\n";
         while (<POLW>)
         {
             if (/^#--BEGIN_CONFDEF/) 
@@ -403,7 +403,6 @@ my $NTTL            = 1;    # after NTTL retries the cache entry is deleted
 my $NTIME           = 30;   # client MUST NOT retry within this seconds in order
                             # to decrease TTL counter
 
-
 # positve (i.,e. HAM) result cache settings ###################################
 
 my $POSCACHESIZE    = 1000; # set to 0 to disable caching of HAM. To this number
@@ -445,12 +444,10 @@ my $USE_NET_DNS     = 0;    # Force the usage of Net::DNS for RBL lookups.
                             # Normally policyd-weight tries to use a faster
                             # RBL lookup routine instead of Net::DNS
 
-
 my $NS              = '';   # A list of space separated NS IPs
                             # This overrides resolv.conf settings
                             # Example: $NS = '1.2.3.4 1.2.3.5';
                             # DEFAULT: empty
-
 
 my $IPC_TIMEOUT     = 2;    # timeout for receiving from cache instance
 
@@ -911,6 +908,8 @@ if($res)
         $USE_NET_DNS = 1;
     }
 }
+
+
 
 # ----------------------------------------------------------
 #                 main
@@ -1803,17 +1802,17 @@ sub weighted_check
     my ($revip, $subip16, $subip);
     if (Net::IP::ip_is_ipv4($ip)) 
     {
-    	my ($ipp1, $ipp2, $ipp3, $ipp4) = split(/\./, $ip);
-	$revip       = $ipp4.'.'.$ipp3.'.'.$ipp2.'.'.$ipp1;
-	$subip16     = $ipp1.'.'.$ipp2.'.';
-	$subip       = $subip16.$ipp3.'.';
+        my ($ipp1, $ipp2, $ipp3, $ipp4) = split(/\./, $ip);
+        $revip       = $ipp4.'.'.$ipp3.'.'.$ipp2.'.'.$ipp1;
+        $subip16     = $ipp1.'.'.$ipp2.'.';
+        $subip       = $subip16.$ipp3.'.';
     }
     else {
-    	$ip          = Net::IP::ip_expand_address($ip,6);
-	$revip       = Net::IP::ip_reverse($ip);
-	$revip       =~s/\.ip6.arpa\.$//;
-	$subip16     = substr($ip,0,15);
-	$subip       = substr($ip,0,20);
+        $ip          = Net::IP::ip_expand_address($ip,6);
+        $revip       = Net::IP::ip_reverse($ip);
+        $revip       =~s/\.ip6.arpa\.$//;
+        $subip16     = substr($ip,0,15);
+        $subip       = substr($ip,0,20);
     }
    
 
@@ -2069,9 +2068,9 @@ sub weighted_check
                             foreach my $mxvar ($mxres->answer)
                             {
                                 next if ($mxvar->type ne 'A' && $mxvar->type ne 'AAAA');
-			                    my $ip_address = $mxvar->address;
-			                    $ip_address = Net::IP::ip_expand_address($mxvar->address,6) 
-			    		            if Net::IP::ip_is_ipv6($mxvar->address);
+                                my $ip_address = $mxvar->address;
+                                $ip_address = Net::IP::ip_expand_address($mxvar->address,6) 
+                                    if Net::IP::ip_is_ipv6($mxvar->address);
                             
                                 # store sender MX hostname entries for comparission 
                                 # with HELO argument
@@ -2099,10 +2098,10 @@ sub weighted_check
                                     $rate   += $helo_from_mx_eq_ip_score[1];
                                     last;
                                 }
-			                    undef $ip_address;
+                                undef $ip_address;
                             }
 
-			            }  #Ipv4/IPv6
+                        }  #Ipv4/IPv6
                     }
                     last if $found;
                 }
@@ -2125,7 +2124,7 @@ sub weighted_check
                 if(!($found))
                 {
                     
-		            for my $query_type ('A','AAAA')
+                    for my $query_type ('A','AAAA')
                     {
 
                         my $query = $res->send($testhelo,$query_type);  
@@ -2139,7 +2138,7 @@ sub weighted_check
                             }
                             next;
                         }
-                        
+
                         foreach my $addr ($query->answer)
                         {
                             if($addr->type eq 'PTR')
@@ -2154,11 +2153,11 @@ sub weighted_check
                                     $helo_untrusted_ok = 1;
                                 }
                             }
-                            
+
                             if(($addr->type ne 'A' && $addr->type ne 'AAAA')){ next; }
-			                
+                            
                             my $ip_address = $addr->address;
-			
+            
                             $ip_address= Net::IP::ip_expand_address($addr->address,6)
                                 if Net::IP::ip_is_ipv6($addr->address);
                         
@@ -2186,9 +2185,9 @@ sub weighted_check
                         
                                 last;
                             }
-			                undef $ip_address;
+                            undef $ip_address;
                         }
-		            } #IPv4/IPv6
+                    } #IPv4/IPv6
                 }
 
                 if($bad_mx && (!($bad_mx_scored)))
