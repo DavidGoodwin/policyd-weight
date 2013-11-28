@@ -557,6 +557,13 @@ my $PIDFILE         = "/var/run/policyd-weight.pid";
 
 #--END_CONFDEF
 
+# Ensure $USER is valid.
+if(!getpwnam($USER)) {
+    if(!$CMD_DEBUG) {
+        die("\$USER does not appear to be valid ($USER); please fix config");
+    }
+    $USER=getpwuid($>);
+}
 
 $0 = "policyd-weight (master)";
 my %cache;
