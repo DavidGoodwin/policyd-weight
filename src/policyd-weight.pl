@@ -3889,21 +3889,20 @@ sub dns_error
     return 1;
 }
 
-#
-# returns 1 if the helo is in [n.n.n.n] notation, 
-# valid, and matches the client ip
+# Returns 1 if the helo is in [n.n.n.n] notation, valid, and matches the client ip
+# Returns 0 for all other circumstances.
 #
 sub squared_helo
 {
     my $helo = shift;
     my $ip   = shift;
 
-    if($$helo !~ /^\[(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\]$/ ) { return }
+    if($$helo !~ /^\[(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\]$/ ) { return 0; }
     my $tmp_helo_ip = $1;
 
     my $tmpip = inet_aton( $tmp_helo_ip );
     
-    length($tmpip) or return;
+    length($tmpip) or return 0;
 
     $tmpip = inet_ntoa($tmpip);
 
