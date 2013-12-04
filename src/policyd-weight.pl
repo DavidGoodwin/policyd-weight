@@ -87,8 +87,8 @@ for(@ARGV)
         }
         else
         {
-            print "configfile ".$ARGV[$arg_iter]." doesn't exist\n";
-            exit "-1";
+            mylog(error => "configfile ".$ARGV[$arg_iter]." doesn't exist\n");
+            die("configfile: $ARGV[$arg_iter] doesn't exist");
         }
     }
     elsif($_ eq '-k')
@@ -251,9 +251,10 @@ EOF
 if($CMD_DEBUG)
 {
     $^W = 1;
-    print "policyd-weight version: ".$VERSION.", CacheVer: $CVERSION\nSystem: ";
-    system("uname -a");
-    print "Perl version: ".$]."\n";
+    mylog(debug => "policyd-weight version: ".$VERSION);
+    mylog(debug => "CacheVer: $CVERSION");
+    mylog(debug => "System: " . `uname -a`);
+    mylog(debug => "Perl version: ".$]."\n");
 }
 
 #
@@ -272,7 +273,7 @@ foreach(split(' ', $Config{sig_name}))
 #
 if($CMD_DEBUG)
 {
-    print "Net::DNS version: " . Net::DNS->version . "\n";
+    mylog(debug => "Net::DNS version: " . Net::DNS->version) ;
 }
 
 
@@ -659,11 +660,11 @@ if($CMD_DEBUG == 1)
         $PIDFILE .= ".debug";
     }
 
-    print "debug: using port ".++$TCP_PORT."\n";
-    print "debug: USER:  $USER\n";
-    print "debug: GROUP: $GROUP\n";
-    print "debug: issuing user:  ".getpwuid($<)."\n";
-    print "debug: issuing group: ".getgid()."\n";
+    mylog(debug => " using port ".++$TCP_PORT);
+    mylog(debug => " running as USER:  $USER");
+    mylog(debug => " running as GROUP: $GROUP");
+    mylog(debug => " issuing user:  ".getpwuid($<));
+    mylog(debug => " issuing group: ".getgrgid(getgid()));
 }
 
 $conf_str = "";
@@ -3016,6 +3017,8 @@ sub spawn_cache
 
 
     # no cache seems to exist, go create one
+    mylog(debug=>'cache-init: no cache appears to exist; trying to create');
+
     unlink $SPATH;
     use POSIX qw(setsid);
 
@@ -3457,13 +3460,14 @@ sub mylog
     my $fac    = shift(@_);
     my $string = join(' ', @_);
 
+    chomp $string;
+
     if($CMD_DEBUG)
     {
         my $now =  scalar(localtime);
            $now =~ /(\d\d:\d\d:\d\d)/;
         
-        print("$1 $fac: $string");
-        print "\n";
+        print STDERR ("$1 $fac: $string\n");
     }
     else
     {
