@@ -346,8 +346,9 @@ my @dnsbl_score = (
     'pbl.spamhaus.org',       3.25,          0,        'DYN_PBL_SPAMHAUS',
     'sbl-xbl.spamhaus.org',   4.35,       -1.5,        'SBL_XBL_SPAMHAUS',
     'bl.spamcop.net',         3.75,       -1.5,        'SPAMCOP',
-    'dnsbl.njabl.org',        4.25,       -1.5,        'BL_NJABL',
-    'ix.dnsbl.manitu.net',    4.35,          0,        'IX_MANITU'
+    'dnsbl.sorbs.net',        3.75,       -1.5,        'DNSBL_SORBS',
+    'ix.dnsbl.manitu.net',    4.35,          0,        'IX_MANITU',
+    'tor.ahbl.org',           2.50,          0,        'TOR_ANBL',
     #'rbl.ipv6-world.net',     4.25,          0,        'IPv6_RBL'  #don't use, kept for testing failures!
 );
 
