@@ -4,4 +4,4 @@ recipient=test@example.org
 sender=test@example.org
 client_address=8.8.8.8
 request=smtpd_access_policy
-" | perl ../src/policyd-weight.pl -d --no-cache 2>&1 | grep --color -E '^|decided action=550'
+" | perl ../src/policyd-weight.pl -d --no-cache 2>/dev/null | grep --color -E 'action=550'
