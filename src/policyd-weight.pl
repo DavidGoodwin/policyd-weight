@@ -37,6 +37,7 @@
 use strict;
 use Fcntl;
 use File::Spec;
+use File::Path qw(make_path);
 use Sys::Syslog qw(:DEFAULT setlogsock);
 use Net::DNS;
 use Net::IP;
@@ -3029,15 +3030,19 @@ sub spawn_cache
     $SIG{__DIE__} = sub {
         die @_ if index($_[0], 'ETIMEOUT') == 0;
         mylog(warning=>"cache: err: @_");
-        
         unlink $SPATH;
-        
         rmdir $LOCKPATH.'/cache_lock';
     };
 
 
     # change directory to $LOCKPATH in order to get some
     # coredumps just in case.
+
+    # Ensure cache path exists. We don't particularly care if this fails to work, as the chdir should catch anything problematic
+    eval {
+        make_path("$LOCKPATH/cores/cache", { 'mode' => 0700 } );
+    };
+    # warn $@ if $@;
     chdir "$LOCKPATH/cores/cache" or die
         "cache: chdir $LOCKPATH/cores/cache: $!";
 
