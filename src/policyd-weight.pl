@@ -55,6 +55,7 @@ use vars qw($csock $s $tcp_socket $sock $new_sock $old_mtime);
 our $VERSION   = "0.1.15 beta-2-github";
 our $CVERSION  = 5;                 # cache interface version
 our $CMD_DEBUG = 0;                 # -d switch 
+our $CMD_NO_CACHE = 0;              # --no-cache (only of use if -d is set)
 our $KILL;                          # -k switch
 our $STATS;                         # -s switch
 our $DAEMONIZE;                     # start   action
@@ -102,6 +103,10 @@ for(@ARGV)
     elsif($_ eq '-D')
     {
         $FOREGROUND = 1;
+    }
+    elsif($_ eq '--no-cache') 
+    {
+        $CMD_NO_CACHE = 1;
     }
     elsif($_ =~ /-[-]*h/)
     {
@@ -2891,6 +2896,10 @@ sub cache_query
     my $rate   = shift(@_) || '';
     my $sender = shift(@_) || '';
     my $domain = shift(@_) || '';
+    if($CMD_DEBUG && $CMD_NO_CACHE) {
+        mylog(debug => "Caching disabled; returning undef : $query / $ip / $rate / $sender / $domain");
+        return undef;
+    }
 
     # Not sure why we're setting errno to 0 (or indeed the original '' which made perl moan).
     $! = 0;
