@@ -886,10 +886,10 @@ if($conf_err)
 
 
 our $res=Net::DNS::Resolver->new;
-
-    $res->retrans($DNS_RETRY_IVAL) unless $DNS_RETRY_IVAL eq "";
-    $res->retry  ($DNS_RETRIES)    unless $DNS_RETRIES    eq "";
-    $res->debug  (1)               if     ($CMD_DEBUG == 1);
+$res->retrans($DNS_RETRY_IVAL) unless $DNS_RETRY_IVAL eq "";
+$res->retry($DNS_RETRIES)      unless $DNS_RETRIES    eq "";
+# This is responsible for outputting the DNS query results ...
+$res->debug(1)                 if     ($VERBOSE == 1);
 
 if($NS && $NS =~ /\d/)
 {
