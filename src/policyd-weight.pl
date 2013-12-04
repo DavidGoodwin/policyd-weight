@@ -223,7 +223,7 @@ Args in [ ] are optional.
 
 Options
     -D                   Don't detach master - run master in foreground
-    -d                   Debug, don't daemonize, log to STDOUT
+    -d                   Debug, don't daemonize, log to STDERR
     -f /path/to/file     Specify a configuration file
     -h                   This help
     -k                   Kill cache instance
@@ -494,7 +494,7 @@ my @enforce_dyndns_score             = (3,          0    );
 #
 my @geoip_score = (
     # ISO-3166 COUNTRY CODE, NO MATCH, MATCH, LOG NAME
-    "UK",                       0,      -1,     "UK",
+    "GB",                       0,      -1,     "UK",
     "CN",                       0,       2,     "CHINA",
     "RU",                       0,       2,     "RUSSIA",
 );
@@ -502,6 +502,7 @@ my @geoip_score = (
 my $geoip_scoring_enabled = 0; # 0 = do not perform geoip checks (DEFAULT), 1 = enable
 
 
+# This makes debug log more stuff
 my $VERBOSE = 0;
 
 my $ADD_X_HEADER        = 1;    # Switch on or off an additional 
@@ -661,7 +662,8 @@ if($CMD_DEBUG == 1 )
 {
     $DEBUG = 1;
 
-    if($conf_str) { 
+    if($conf_str)
+    {
         $conf_str =~ s/\#.*?(\n)/$1/gs;
         $conf_str =~ s/\n+/\n/g;
         mylog(debug => "config: $conf\n".$conf_str); 
@@ -2794,7 +2796,7 @@ sub weighted_check
     if(($DEBUG) || ($CMD_DEBUG == 1))
     {
         $addresses =~ s/ $//;
-        $RET      .=  ' <helo_ips: '.$addresses.'>';
+        $RET      .=  ' <helo_ips:'.$addresses.'>';
     }
 
     mylog(info=>"weighted check: $RET; $trace_info; rate: $rate");
