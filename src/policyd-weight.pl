@@ -598,12 +598,21 @@ if(!($conf))
     {
         $conf = "policyd-weight.conf";
     }
+    else {
+        if($CMD_DEBUG) { 
+            mylog(debug => "No config file defined/found");
+        }
+        else {
+            warn "No config file defined/found\n";
+        }
+    }
+
 }
 
 my $conf_err;
 my $conf_str;
 our $old_mtime;
-if("$conf" ne "")
+if($conf) 
 {
     if(sprintf("%04o",(stat($conf))[2]) !~ /(7|6|3|2)$/)
     {
@@ -643,16 +652,15 @@ else
 
 our $STAYALIVE;
 
-# set group to user if no group has been defined
-$GROUP = $USER unless $GROUP;
-
-
-if($CMD_DEBUG == 1)
+if($CMD_DEBUG == 1 )
 {
     $DEBUG = 1;
-    $conf_str =~ s/\#.*?(\n)/$1/gs;
-    $conf_str =~ s/\n+/\n/g;
-    print "config: $conf\n".$conf_str."\n"; 
+
+    if($conf_str) { 
+        $conf_str =~ s/\#.*?(\n)/$1/gs;
+        $conf_str =~ s/\n+/\n/g;
+        mylog(debug => "config: $conf\n".$conf_str); 
+    }
     $SPATH   .= ".debug";
     
     # chose /tmp for debug pidfiles only if user is not root
