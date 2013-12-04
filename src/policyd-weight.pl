@@ -567,6 +567,12 @@ if(!getpwnam($USER)) {
     }
     $USER=getpwuid($>);
 }
+if(!getgrnam($GROUP)) {
+    if(!$CMD_DEBUG) {
+        die("\$GROUP does not appear to be valid ($GROUP); please fix config");
+    }
+    $GROUP=getgrgid(getgid());
+}
 
 $0 = "policyd-weight (master)";
 my %cache;
