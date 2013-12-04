@@ -1680,6 +1680,18 @@ sub parse_input
         }
     }
 
+    # If not daemonised, attr{things} may not be defined.
+    if(!($DAEMONIZE)) { 
+        if(!($attr{instance})) {
+            $attr{instance} = 'default';
+        }
+        if(!($attr{client_name})) {
+            $attr{client_name} = 'default';
+        }
+        if(!($attr{recipient})) {
+            $attr{recipient} = 'default';
+        }
+    }
 
     my $response;
     my $action;
@@ -1706,7 +1718,7 @@ sub parse_input
         $action =~ s/^[ \t]*rc:[ \t]*(.*?)[,; .]+.*/$1/i;
     }
 
-    my $trace_info;
+    my $trace_info = '';
     if($DEBUG)
     {
         $trace_info = '<instance='.$attr{instance}.'> ';
@@ -1841,7 +1853,7 @@ sub weighted_check
    
 
     my $rate                    = 0;
-    my $total_dnsbl_score;               # this var holds only positive scores!
+    my $total_dnsbl_score       = 0; # this var holds only positive scores!
     my $helo_ok                 = 0;
     my $mx_ok                   = 0;
     my $helo_untrusted_ok       = 0;
@@ -2880,7 +2892,8 @@ sub cache_query
     my $sender = shift(@_) || '';
     my $domain = shift(@_) || '';
 
-    $! = '';
+    # Not sure why we're setting errno to 0 (or indeed the original '' which made perl moan).
+    $! = 0;
     $@ = ();
     if( (!($csock)) || ($csock && (!($csock->connected))) )
     {
