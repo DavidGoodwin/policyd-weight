@@ -401,7 +401,7 @@ my $CACHESIZE       = 2000; # set to 0 to disable caching for spam results.
 
 my $CACHEMAXSIZE    = 4000; # at this number of entries cleanup takes place
 
-my $CACHEREJECTMSG  = '550 temporarily blocked because of previous errors';
+my $CACHEREJECTMSG  = $REJECTMSG . " [cached] ";
 
 my $NTTL            = 1;    # after NTTL retries the cache entry is deleted
 
