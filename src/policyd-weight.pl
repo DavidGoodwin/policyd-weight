@@ -354,8 +354,6 @@ my @dnsbl_score = (
     'dnsbl.sorbs.net',        3.75,       -1.5,        'DNSBL_SORBS',
     'ix.dnsbl.manitu.net',    4.35,          0,        'IX_MANITU',
     'tor.ahbl.org',           2.50,          0,        'TOR_ANBL',
-
-    #'rbl.ipv6-world.net',     4.25,          0,        'IPv6_RBL'  #don't use, kept for testing failures!
 );
 
 my $MAXDNSBLHITS  = 2;  # If Client IP is listed in MORE
@@ -372,9 +370,7 @@ my $MAXDNSBLMSG   = '550 Your MTA is listed in too many DNSBLs';
 my @rhsbl_score = (
     'multi.surbl.org',             4,        0,        'SURBL',
     'rhsbl.ahbl.org',              4,        0,        'AHBL',
-    'dsn.rfc-ignorant.org',        3.5,      0,        'DSN_RFCI',
-    'postmaster.rfc-ignorant.org', 0.1,      0,        'PM_RFCI',
-    'abuse.rfc-ignorant.org',      0.1,      0,        'ABUSE_RFCI'
+    'excommunicado.co.uk',        15,        0,        'EXCOMMUNICADO', # See http://twitter.com/excommunicado
 );
 
 my $BL_ERROR_SKIP     = 2;  # skip a RBL if this RBL had this many continuous
@@ -587,7 +583,7 @@ my %poscache;
 my $my_PTIME;
 my $my_TEMP_PTIME;
 
-if(!($conf))
+if(not defined $conf)
 {
     if( -f "/etc/policyd-weight.conf")
     {
@@ -613,13 +609,12 @@ if(!($conf))
             warn "No config file defined/found\n";
         }
     }
-
 }
 
 my $conf_err;
 my $conf_str;
 our $old_mtime;
-if($conf) 
+if(defined $conf) 
 {
     if(sprintf("%04o",(stat($conf))[2]) !~ /(7|6|3|2)$/)
     {
@@ -662,13 +657,17 @@ our $STAYALIVE;
 if($CMD_DEBUG == 1 )
 {
     $DEBUG = 1;
-
-    if($conf_str)
+    if(defined $conf_str)
     {
         $conf_str =~ s/\#.*?(\n)/$1/gs;
         $conf_str =~ s/\n+/\n/g;
         mylog(debug => "config: $conf\n".$conf_str); 
     }
+    else 
+    {
+        $conf_str = ''; 
+    }
+    mylog(debug => "config: $conf\n$conf_str");
     $SPATH   .= ".debug";
     
     # chose /tmp for debug pidfiles only if user is not root
@@ -2911,8 +2910,7 @@ sub cache_query
         return undef;
     }
 
-    # Not sure why we're setting errno to 0 (or indeed the original '' which made perl moan).
-    $! = 0;
+    $! = undef;
     $@ = ();
     if( (!($csock)) || ($csock && (!($csock->connected))) )
     {
@@ -3040,7 +3038,7 @@ sub spawn_cache
         die $!;
     }
 
-    if(!( $( = getpwnam($USER) ))
+    if(!( $( = getgrnam($GROUP) ))
     {
         mylog(warning=>"cache: couldn't change GID to user $GROUP: $!");
     }
