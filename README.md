@@ -5,13 +5,21 @@ policyd-weight is a mail filter for the Postfix mail transfer agent (MTA) writte
 
 It's official website is http://www.policyd-weight.org
 
+
 This repository (currently) contains minor refactoring of the codebase.
 
-http://en.wikipedia.org/wiki/Policyd-weight and http://www.policyd-weight.org/
+See : http://en.wikipedia.org/wiki/Policyd-weight and http://www.policyd-weight.org/
 
 TODO:
 
  * Make helo/rhdnsbl checking more configurable (i.e. more flexible than just using $dnsbl_checks_only)
- * Allow logging to a file and not via syslog (perhaps)
- * Add some basic tests to ensure I don't break anything.
- * Try and discover the geoip patch and add it in, or recreate?
+ * Add some basic tests to ensure I don't break anything. (see tests/)
+
+
+Changes made: 
+ * Merged in GeoIP Patch
+ * Updated DNS Blacklists
+ * Added in RHSBL for ExCommunicado (see twitter.com/excommunicado)
+ * Remove undefined variables
+ * Copy with MAIL FROM being empty (as seen from outlook.com clients) and still do some checks (don't give up)
+
