@@ -354,6 +354,7 @@ my @dnsbl_score = (
     'dnsbl.sorbs.net',        3.75,       -1.5,        'DNSBL_SORBS',
     'ix.dnsbl.manitu.net',    4.35,          0,        'IX_MANITU',
     'tor.ahbl.org',           2.50,          0,        'TOR_ANBL',
+
     #'rbl.ipv6-world.net',     4.25,          0,        'IPv6_RBL'  #don't use, kept for testing failures!
 );
 
@@ -774,7 +775,6 @@ if(!($run_action))
     $STAYALIVE = 1;
 }
 
-
 # re-arrange signal handlers
 $SIG{__DIE__} = sub {
     die @_ if index($_[0], 'ETIMEOUT') == 0;
@@ -803,14 +803,14 @@ $SIG{'USR2'}  = sub { unlink $PIDFILE;
                       mylog(warning=>"Got SIG@_. Daemon terminated."); exit };
 
 if($SIG{'POLL'}) {
-$SIG{'POLL'}   = sub { unlink $PIDFILE;
+    $SIG{'POLL'}   = sub { unlink $PIDFILE;
                       mylog(warning=>"Got SIG@_. Daemon terminated."); exit };
 }
 
 if($SIG{'UNUSED'})
 {
-$SIG{'UNUSED'} = sub { unlink $PIDFILE;
-                      mylog(info=>"Got SIG@_. Daemon terminated."); exit };
+    $SIG{'UNUSED'} = sub { unlink $PIDFILE;
+                     mylog(info=>"Got SIG@_. Daemon terminated."); exit };
 }
 
 
@@ -889,7 +889,6 @@ if($conf_err)
     mylog(warning=>"conf-err: falling back to builtin defaults");
     $RETANSW = $RETANSW." using builtin defaults due to config-error";
 }
-
 
 
 our $res=Net::DNS::Resolver->new;
@@ -1652,6 +1651,10 @@ sub parse_input
     $_ = shift; 
     $_ =~ tr/\r\n//d;
 
+    if ($VERBOSE == 1) {
+        mylog(debug => "Input : $_ ");
+    }
+
     if (/=/) 
     {
         my ($k, $v) = split (/=/, lc($_), 2); 
@@ -1793,16 +1796,15 @@ sub weighted_check
     }
     $trace_info  .= "<client=$client_name\[$ip\]> <helo=$helo> <from=$from> <to=$rcpt>";
 
-
-
-    my $from_domain;
+    my $from_domain = '';
     if($attr{sender} =~ /.*@(.*)/)
     {
         $from_domain = $1;
     }
+    # for now, cope with empty MAIL FROM things, as e.g. Exchange/Outlook.com do it.
     if($from eq '')
     {
-        return('DUNNO NULL (<>) Sender');
+        #return('DUNNO NULL (<>) Sender');
     }
     my $orig_from   = $from;
 
@@ -2050,7 +2052,13 @@ sub weighted_check
     $from =~ /.*@(.*)/;
     my $tmp_from = $1;
 
-    my @parts_check = ($tmp_from, $helo);    # don't change order
+    my @parts_check;
+    if(defined($tmp_from) && $tmp_from ne '') {
+        push (@parts_check, $tmp_from);
+    }
+    push (@parts_check, $helo);
+
+    #my @parts_check = ($tmp_from, $helo);    # don't change order
 
     for(my $tmpcnt=0; $tmpcnt < @parts_check; $tmpcnt++)
     {
@@ -2309,7 +2317,7 @@ sub weighted_check
 
 
 ## HELO numeric check #########################################################
-    my $glob_numeric_score;
+    my $glob_numeric_score = 0;
     # check /1.2.3.4/ and /[1.2.3.4]/
     if($helo =~ /^[\d|\[][\d\.]+[\d|\]]$/)
     {
@@ -2664,7 +2672,7 @@ sub weighted_check
 ## From has nobody/anonymous user #############################################
     my $anon= 0;
 
-    if($orig_from =~ /(nobody|anonymous)\@/)
+    if($orig_from eq '' || $orig_from =~ /(nobody|noreply|anonymous)\@/ )
     {
      my $score              = $from_anon[0] + $total_dnsbl_score + 
                               $glob_numeric_score;
