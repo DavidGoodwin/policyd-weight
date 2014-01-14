@@ -21,5 +21,5 @@ Changes made:
  * Updated DNS Blacklists
  * Added in RHSBL for ExCommunicado (see twitter.com/excommunicado)
  * Remove undefined variables
- * Copy with MAIL FROM being empty (as seen from outlook.com clients) and still do some checks (don't give up)
+ * Cope with MAIL FROM being empty (as seen from outlook.com clients) and still do some checks (don't give up)
 
