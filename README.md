@@ -23,3 +23,10 @@ Changes made:
  * Remove undefined variables
  * Cope with MAIL FROM being empty (as seen from outlook.com clients) and still do some checks (don't give up)
 
+
+Small hint
+==========
+
+You almost certainly want to look at https://github.com/palepurple/policyd-dnsbl-spf-geoip instead.
+It ought to be more maintainable and extendable. 
+There's too much magic + functionality within this (policyd-weight) codebase to make modification(s) easy.
